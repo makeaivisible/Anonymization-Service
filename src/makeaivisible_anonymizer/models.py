@@ -1,6 +1,10 @@
 from enum import StrEnum
+from uuid import UUID, uuid4
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+
+
+MAX_TOTAL_CONTENT_CHARS = 1_000_000
 
 
 class Role(StrEnum):
@@ -26,8 +30,16 @@ class ConversationMessage(BaseModel):
 class AnonymizeRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    conversation_id: str = Field(min_length=1, max_length=128)
     messages: list[ConversationMessage] = Field(min_length=1, max_length=1_000)
+
+    @model_validator(mode="after")
+    def total_content_must_fit_limit(self) -> "AnonymizeRequest":
+        total = sum(len(message.content) for message in self.messages)
+        if total > MAX_TOTAL_CONTENT_CHARS:
+            raise ValueError(
+                f"total message content must not exceed {MAX_TOTAL_CONTENT_CHARS} characters"
+            )
+        return self
 
 
 class Redaction(BaseModel):
@@ -46,6 +58,6 @@ class RedactionSummary(BaseModel):
 
 class AnonymizeResponse(BaseModel):
     schema_version: str
-    conversation_id: str
+    conversation_id: UUID = Field(default_factory=uuid4)
     messages: list[ConversationMessage]
     redaction_report: RedactionSummary

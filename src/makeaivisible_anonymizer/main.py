@@ -3,6 +3,7 @@ from collections import defaultdict
 from fastapi import FastAPI
 
 from . import __version__
+from .limits import RequestSizeLimitMiddleware
 from .models import (
     AnonymizeRequest,
     AnonymizeResponse,
@@ -16,6 +17,7 @@ app = FastAPI(
     description="Deterministic baseline for removing direct identifiers from conversations.",
     version=__version__,
 )
+app.add_middleware(RequestSizeLimitMiddleware)
 
 
 @app.get("/health")
@@ -36,7 +38,6 @@ def anonymize(request: AnonymizeRequest) -> AnonymizeResponse:
 
     return AnonymizeResponse(
         schema_version="0.1.0",
-        conversation_id=request.conversation_id,
         messages=messages,
         redaction_report=RedactionSummary(
             total=len(redactions),

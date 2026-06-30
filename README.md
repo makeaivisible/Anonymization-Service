@@ -32,7 +32,10 @@ Expose a local `/anonymize` endpoint with deterministic redaction tests and a do
 
 The repository now includes a runnable deterministic baseline. It detects emails, phone
 numbers, URLs, usernames, and explicitly labeled account IDs. It processes requests in
-memory and does not include a database or file persistence layer.
+memory and does not include a database or file persistence layer. The service generates
+an opaque conversation UUID rather than accepting an external identifier, and rejects
+requests containing more than one million message characters. HTTP request bodies are
+also capped at five megabytes before JSON parsing.
 
 This baseline is not sufficient for production or real contributor data. Names, schools,
 free-form addresses, indirect identifiers, and context-dependent identifiers require a
@@ -58,11 +61,12 @@ curl -s http://127.0.0.1:8000/anonymize \
 
 ### Contract
 
-`POST /anonymize` accepts a conversation identifier and a non-empty list of messages.
+`POST /anonymize` accepts a non-empty list of messages. Caller-supplied conversation or
+account identifiers are rejected.
 The response contains:
 
 - `schema_version`: version of the anonymized record contract.
-- `conversation_id`: caller-provided identifier; callers must not use a personal identifier.
+- `conversation_id`: an opaque UUID generated independently for every request.
 - `messages`: roles and redacted message content.
 - `redaction_report`: counts and source spans without the original sensitive values.
 

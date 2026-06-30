@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from fastapi.testclient import TestClient
 
 from makeaivisible_anonymizer.main import app
@@ -24,7 +26,6 @@ def test_anonymizes_synthetic_conversation_without_echoing_values() -> None:
     response = client.post(
         "/anonymize",
         json={
-            "conversation_id": "synthetic-demo-1",
             "messages": [
                 {"role": "user", "content": f"Email me at {sensitive_values[0]}."},
                 {
@@ -39,6 +40,7 @@ def test_anonymizes_synthetic_conversation_without_echoing_values() -> None:
     payload = response.json()
     serialized = response.text
     assert payload["schema_version"] == "0.1.0"
+    UUID(payload["conversation_id"])
     assert payload["redaction_report"]["total"] == 5
     assert payload["redaction_report"]["by_type"] == {
         "ACCOUNT_ID": 1,
@@ -55,7 +57,6 @@ def test_replacements_are_stable_within_a_request() -> None:
     response = client.post(
         "/anonymize",
         json={
-            "conversation_id": "synthetic-demo-2",
             "messages": [
                 {"role": "user", "content": "First: a@example.org"},
                 {"role": "user", "content": "Second: b@example.org"},
@@ -69,18 +70,64 @@ def test_replacements_are_stable_within_a_request() -> None:
     assert messages[1]["content"] == "Second: [EMAIL_2]"
 
 
-def test_rejects_blank_messages_and_unknown_fields() -> None:
+def test_generates_a_new_opaque_id_for_each_request() -> None:
+    request = {"messages": [{"role": "user", "content": "hello"}]}
+
+    first = client.post("/anonymize", json=request)
+    second = client.post("/anonymize", json=request)
+
+    assert first.status_code == 200
+    assert second.status_code == 200
+    assert first.json()["conversation_id"] != second.json()["conversation_id"]
+
+
+def test_rejects_blank_messages_and_caller_supplied_identifiers() -> None:
     blank = client.post(
         "/anonymize",
-        json={"conversation_id": "bad", "messages": [{"role": "user", "content": "   "}]},
+        json={"messages": [{"role": "user", "content": "   "}]},
     )
-    unknown = client.post(
+    supplied_identifier = client.post(
         "/anonymize",
         json={
-            "conversation_id": "bad",
-            "messages": [{"role": "user", "content": "hello", "raw_name": "not allowed"}],
+            "conversation_id": "provider-account-123",
+            "messages": [{"role": "user", "content": "hello"}],
         },
     )
 
     assert blank.status_code == 422
-    assert unknown.status_code == 422
+    assert supplied_identifier.status_code == 422
+
+
+def test_rejects_requests_over_the_aggregate_content_limit() -> None:
+    response = client.post(
+        "/anonymize",
+        json={"messages": [{"role": "user", "content": "x" * 50_000} for _ in range(21)]},
+    )
+
+    assert response.status_code == 422
+    assert "total message content must not exceed 1000000 characters" in response.text
+
+
+def test_rejects_oversized_http_body_before_parsing() -> None:
+    response = client.post(
+        "/anonymize",
+        content=b"x" * 5_000_001,
+        headers={"content-type": "application/json"},
+    )
+
+    assert response.status_code == 413
+    assert response.json() == {"detail": "request body too large"}
+
+
+def test_rejects_oversized_stream_without_content_length() -> None:
+    def chunks():
+        for _ in range(6):
+            yield b"x" * 1_000_000
+
+    response = client.post(
+        "/anonymize",
+        content=chunks(),
+        headers={"content-type": "application/json"},
+    )
+
+    assert response.status_code == 413
