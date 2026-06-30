@@ -1,0 +1,13 @@
+{
+  "conversation_id": "synthetic-demo-1",
+  "messages": [
+    {
+      "role": "user",
+      "content": "My email is maya@example.org and my username is @maya_student."
+    },
+    {
+      "role": "assistant",
+      "content": "I will not contact you outside this conversation."
+    }
+  ]
+}
