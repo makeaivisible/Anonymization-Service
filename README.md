@@ -27,3 +27,52 @@ Raw conversations are considered highly sensitive. The MVP must treat raw text a
 ## First Milestone
 
 Expose a local `/anonymize` endpoint with deterministic redaction tests and a documented anonymized output schema.
+
+## Current Baseline
+
+The repository now includes a runnable deterministic baseline. It detects emails, phone
+numbers, URLs, usernames, and explicitly labeled account IDs. It processes requests in
+memory and does not include a database or file persistence layer. The service generates
+an opaque conversation UUID rather than accepting an external identifier, and rejects
+requests containing more than one million message characters. HTTP request bodies are
+also capped at five megabytes before JSON parsing.
+
+This baseline is not sufficient for production or real contributor data. Names, schools,
+free-form addresses, indirect identifiers, and context-dependent identifiers require a
+layered detector and expert privacy review.
+
+Contributor challenge slots are tracked in [docs/mvp-challenges.md](docs/mvp-challenges.md).
+Detector-specific extension notes live in
+[docs/pii-detector-playbook.md](docs/pii-detector-playbook.md), and editable backlog
+seed data is available at [examples/challenge_backlog.json](examples/challenge_backlog.json).
+
+### Run locally
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -e '.[dev]'
+uvicorn makeaivisible_anonymizer.main:app --reload
+```
+
+Open `http://127.0.0.1:8000/docs` for the generated API documentation, or submit the
+synthetic example directly:
+
+```bash
+curl -s http://127.0.0.1:8000/anonymize \
+  -H 'content-type: application/json' \
+  --data @examples/request.json
+```
+
+### Contract
+
+`POST /anonymize` accepts a non-empty list of messages. Caller-supplied conversation or
+account identifiers are rejected.
+The response contains:
+
+- `schema_version`: version of the anonymized record contract.
+- `conversation_id`: an opaque UUID generated independently for every request.
+- `messages`: roles and redacted message content.
+- `redaction_report`: counts and source spans without the original sensitive values.
+
+The generated OpenAPI schema is the canonical machine-readable contract for this MVP.

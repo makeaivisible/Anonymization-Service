@@ -1,0 +1,74 @@
+[
+  {
+    "id": 1,
+    "repository": "Portal-Frontend",
+    "title": "Build mobile-first consent and upload prototype",
+    "editable_area": "Create a mock upload flow that calls this service contract."
+  },
+  {
+    "id": 2,
+    "repository": "Portal-Frontend",
+    "title": "Add platform export guidance",
+    "editable_area": "Draft export instructions for ChatGPT, Claude, Gemini, and Copilot."
+  },
+  {
+    "id": 3,
+    "repository": "Anonymization-Service",
+    "title": "Implement anonymized conversation schema and /anonymize endpoint",
+    "editable_area": "Extend models, endpoint behavior, and schema tests."
+  },
+  {
+    "id": 4,
+    "repository": "Anonymization-Service",
+    "title": "Add PII detector test suite",
+    "editable_area": "Add synthetic detector fixtures and near-miss tests."
+  },
+  {
+    "id": 5,
+    "repository": "NLP-Scoring-Engine",
+    "title": "Create baseline scoring schema and deterministic rubric scorer",
+    "editable_area": "Use anonymized messages as scoring fixtures."
+  },
+  {
+    "id": 6,
+    "repository": "NLP-Scoring-Engine",
+    "title": "Build evaluation harness for human-label comparison",
+    "editable_area": "Define synthetic human-label fixtures and agreement reports."
+  },
+  {
+    "id": 7,
+    "repository": "Dashboard",
+    "title": "Build synthetic aggregate dashboard",
+    "editable_area": "Render aggregate-only counts and score distributions."
+  },
+  {
+    "id": 8,
+    "repository": "Dashboard",
+    "title": "Add privacy threshold and suppression rules",
+    "editable_area": "Implement small-cell suppression fixtures."
+  },
+  {
+    "id": 9,
+    "repository": "Dataset-Publishing-Pipeline",
+    "title": "Create release manifest and aggregate export builder",
+    "editable_area": "Validate reviewed anonymized records before release."
+  },
+  {
+    "id": 10,
+    "repository": "Dataset-Publishing-Pipeline",
+    "title": "Draft dataset card and release checklist generator",
+    "editable_area": "Generate review-ready dataset-card drafts."
+  },
+  {
+    "id": 11,
+    "repository": "Governance-Documentation",
+    "title": "Draft data lifecycle and consent documents",
+    "editable_area": "Document lifecycle, retention, deletion, and consent assumptions."
+  },
+  {
+    "id": 12,
+    "repository": "Governance-Documentation",
+    "title": "Draft human review and scoring validation protocol",
+    "editable_area": "Define reviewer rules, calibration, and validation metrics."
+  }
+]
