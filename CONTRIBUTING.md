@@ -8,6 +8,8 @@ Thank you for helping Make AI Visible.
 - Use synthetic or anonymized data in examples, tests, screenshots, and issues.
 - Keep pull requests focused and explain the privacy impact of the change.
 - Mark legal, IRB, security, or expert-validation assumptions clearly.
+- Pick a challenge from `docs/mvp-challenges.md` and keep edits tied to that challenge.
+- Add detector examples in `tests/test_redaction.py` before changing redaction behavior.
 
 ## Pull Request Checklist
 

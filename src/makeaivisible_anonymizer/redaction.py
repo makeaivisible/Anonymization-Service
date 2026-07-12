@@ -1,29 +1,8 @@
-import re
 from collections import Counter, defaultdict
 from dataclasses import dataclass
 
+from .detectors import DETECTORS
 from .models import Redaction
-
-
-@dataclass(frozen=True)
-class Detector:
-    entity_type: str
-    pattern: re.Pattern[str]
-
-
-DETECTORS = (
-    Detector("EMAIL", re.compile(r"(?<![\w.+-])[\w.+-]+@[\w-]+(?:\.[\w-]+)+", re.I)),
-    Detector("URL", re.compile(r"\b(?:https?://|www\.)[^\s<>]+", re.I)),
-    Detector(
-        "PHONE",
-        re.compile(r"(?<!\w)(?:\+?1[ .-]?)?(?:\(\d{3}\)|\d{3})[ .-]\d{3}[ .-]\d{4}(?!\w)"),
-    ),
-    Detector("USERNAME", re.compile(r"(?<![\w@])@[A-Za-z0-9_]{2,32}\b")),
-    Detector(
-        "ACCOUNT_ID",
-        re.compile(r"\b(?:account|user|member)[ _-]?id\s*[:=#]\s*[A-Za-z0-9_-]{4,64}\b", re.I),
-    ),
-)
 
 
 @dataclass(frozen=True)

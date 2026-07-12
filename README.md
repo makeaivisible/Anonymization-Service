@@ -41,6 +41,11 @@ This baseline is not sufficient for production or real contributor data. Names, 
 free-form addresses, indirect identifiers, and context-dependent identifiers require a
 layered detector and expert privacy review.
 
+Contributor challenge slots are tracked in [docs/mvp-challenges.md](docs/mvp-challenges.md).
+Detector-specific extension notes live in
+[docs/pii-detector-playbook.md](docs/pii-detector-playbook.md), and editable backlog
+seed data is available at [examples/challenge_backlog.json](examples/challenge_backlog.json).
+
 ### Run locally
 
 ```bash

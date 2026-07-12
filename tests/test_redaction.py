@@ -2,7 +2,16 @@ from collections import defaultdict
 
 import pytest
 
+from makeaivisible_anonymizer.detectors import DETECTOR_GAPS, DETECTORS
 from makeaivisible_anonymizer.redaction import redact_text
+
+
+def test_detector_registry_exposes_active_and_gap_work() -> None:
+    active_types = {detector.entity_type for detector in DETECTORS}
+    gap_types = {gap["entity_type"] for gap in DETECTOR_GAPS}
+
+    assert active_types == {"ACCOUNT_ID", "EMAIL", "PHONE", "URL", "USERNAME"}
+    assert {"ADDRESS", "INDIRECT_IDENTIFIER", "PERSON_NAME", "SCHOOL"} <= gap_types
 
 
 @pytest.mark.parametrize(
