@@ -48,3 +48,39 @@ def test_common_near_misses_are_not_redacted(source: str) -> None:
 
     assert result == source
     assert redactions == []
+
+
+@pytest.mark.xfail(reason="Challenge #4 gap: person-name detection needs expert review")
+def test_future_person_name_detection_gap() -> None:
+    result, redactions = redact_text("My name is Maya Chen.", 0, defaultdict(int))
+
+    assert "Maya Chen" not in result
+    assert redactions[0].entity_type == "PERSON_NAME"
+
+
+@pytest.mark.xfail(reason="Challenge #4 gap: school detection needs curated examples")
+def test_future_school_detection_gap() -> None:
+    result, redactions = redact_text("I go to Cedar Ridge Secondary.", 0, defaultdict(int))
+
+    assert "Cedar Ridge Secondary" not in result
+    assert redactions[0].entity_type == "SCHOOL"
+
+
+@pytest.mark.xfail(reason="Challenge #4 gap: address detection needs locale-aware rules")
+def test_future_address_detection_gap() -> None:
+    result, redactions = redact_text("Please pick me up at 42 Maple Street.", 0, defaultdict(int))
+
+    assert "42 Maple Street" not in result
+    assert redactions[0].entity_type == "ADDRESS"
+
+
+@pytest.mark.xfail(reason="Challenge #4 gap: indirect identifiers need policy decisions")
+def test_future_indirect_identifier_detection_gap() -> None:
+    result, redactions = redact_text(
+        "I am the only grade 10 student on the robotics team in my town.",
+        0,
+        defaultdict(int),
+    )
+
+    assert "only grade 10 student" not in result
+    assert redactions[0].entity_type == "INDIRECT_IDENTIFIER"

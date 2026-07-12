@@ -31,3 +31,21 @@ These are visible in `DETECTOR_GAPS` so contributors can pick them up intentiona
 
 Each gap needs examples, false-positive checks, and privacy review before it should be
 enabled for real data.
+
+`tests/test_redaction.py` includes expected-failure tests for these gaps. They should
+only be converted into passing tests when the detector behavior, limitations, and review
+requirements are documented.
+
+## Challenge #4 Acceptance Progress
+
+| Identifier type | Status |
+| --- | --- |
+| Emails | Active deterministic detector and tests |
+| Phone numbers | Active deterministic detector and tests |
+| Usernames | Active deterministic detector and tests |
+| URLs | Active deterministic detector and tests |
+| Account IDs | Active deterministic detector and tests |
+| Names | Expected-failure synthetic gap test |
+| Schools | Expected-failure synthetic gap test |
+| Addresses | Expected-failure synthetic gap test |
+| Indirect identifiers | Expected-failure synthetic gap test |
