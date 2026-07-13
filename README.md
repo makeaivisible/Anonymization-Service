@@ -46,6 +46,12 @@ Detector-specific extension notes live in
 [docs/pii-detector-playbook.md](docs/pii-detector-playbook.md), and editable backlog
 seed data is available at [examples/challenge_backlog.json](examples/challenge_backlog.json).
 
+Developer notes:
+
+- [src/makeaivisible_anonymizer/README.md](src/makeaivisible_anonymizer/README.md)
+  explains the service package and request flow.
+- [examples/README.md](examples/README.md) explains the synthetic examples.
+
 ### Run locally
 
 ```bash
